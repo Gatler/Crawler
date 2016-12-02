@@ -13,7 +13,6 @@ class Model(object):
 class Movie(Model):
     def __init__(self):
         super(Movie, self).__init__()
-        # 电影类有 4 个属性
         self.name = ''
         self.score = 0
         self.quote = ''
@@ -35,11 +34,6 @@ def movies_from_url(url):
     movie_divs = root.xpath('//div[@class="pl2"]')
     movies = [movie_from_div(div) for div in movie_divs]
     return movies
-
-
-def save_covers(movies):
-    for m in movies:
-        download_img(m.cover_url, m.name + '.jpg')
 
 
 def main():
