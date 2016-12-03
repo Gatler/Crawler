@@ -1,5 +1,6 @@
 import requests
 from lxml import html
+import time
 
 
 class Model(object):
@@ -14,7 +15,6 @@ class Movie(Model):
         super(Movie, self).__init__()
         self.name = ''
         self.score = 0
-        self.quote = ''
         self.cover_url = ''
 
 
@@ -22,7 +22,6 @@ def movie_from_div(div):
     movie = Movie()
     movie.name = div.xpath('.//span[@class="title"]')[0].text
     movie.score = div.xpath('.//span[@class="rating_num"]')[0].text
-    movie.quote = div.xpath('.//span[@class="inq"]')[0].text
     img_url = div.xpath('.//div[@class="pic"]/a/img/@src')[0]
     movie.cover_url = img_url
     return movie
@@ -48,10 +47,13 @@ def save_covers(movies):
 
 
 def main():
-    url = 'https://movie.douban.com/top250'
-    movies = movies_from_url(url)
-    print(movies)
-    ave_covers(movies)
+    for i in range(10):
+        url = 'https://movie.douban.com/top250?start={}&filter='.format(25 * i)
+        movies = movies_from_url(url)
+        print(movies)
+        print(i)
+        save_covers(movies)
+        time.sleep(1)
 
 
 if __name__ == '__main__':
