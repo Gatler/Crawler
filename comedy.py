@@ -41,6 +41,7 @@ def main():
         url = 'https://movie.douban.com/tag/%E5%96%9C%E5%89%A7?start={}&type=T'.format(20 * i)
         movies = movies_from_url(url)
         print(movies)
+        print(i)
         time.sleep(1)
 
 
