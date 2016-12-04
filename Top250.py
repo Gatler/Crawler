@@ -13,17 +13,25 @@ class Model(object):
 class Movie(Model):
     def __init__(self):
         super(Movie, self).__init__()
-        self.name = ''
-        self.score = 0
+        self.ranking = 0
         self.cover_url = ''
+        self.name = ''
+        self.staff = ''
+        self.publish_info = ''
+        self.rating = 0
+        self.number_of_comments = 0
 
 
 def movie_from_div(div):
     movie = Movie()
-    movie.name = div.xpath('.//span[@class="title"]')[0].text
-    movie.score = div.xpath('.//span[@class="rating_num"]')[0].text
-    img_url = div.xpath('.//div[@class="pic"]/a/img/@src')[0]
-    movie.cover_url = img_url
+    movie.ranking = div.xpath('.//div[@class="pic"]/em')[0].text
+    movie.cover_url = div.xpath('.//div[@class="pic"]/a/img/@src')
+    names = div.xpath('.//span[@class="title"]/text()')
+    movie.name = ''.join(names)
+    movie.rating = div.xpath('.//span[@class="rating_num"]')[0].text
+    infos = div.xpath('.//div[@class="bd"]/p/text()')
+    movie.staff, movie.publish_info = [i.strip() for i in infos[:2]]
+    movie.number_of_comments = div.xpath('.//div[@class="star"]/span')[-1].text[:-3]
     return movie
 
 
@@ -35,25 +43,23 @@ def movies_from_url(url):
     return movies
 
 
-def download_img(url, name):
-    r = requests.get(url)
-    with open(name, 'wb') as f:
-        f.write(r.content)
-
-
-def save_covers(movies):
+def download_covers(movies):
     for m in movies:
-        download_img(m.cover_url, m.name + '.jpg')
+        image_url = m.cover_url[0]
+        r = requests.get(image_url)
+        path = 'download/' + m.name.split('/')[0] + '.jpg'
+        with open(path, 'wb') as f:
+            f.write(r.content)
 
 
 def main():
-    for i in range(10):
+    for i in range(3):
         url = 'https://movie.douban.com/top250?start={}&filter='.format(25 * i)
         movies = movies_from_url(url)
         print(movies)
         print(i)
-        save_covers(movies)
-        time.sleep(1)
+        download_covers(movies)
+        time.sleep(0.1)
 
 
 if __name__ == '__main__':
